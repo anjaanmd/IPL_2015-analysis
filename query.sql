@@ -1,6 +1,7 @@
 USE ipl_2015;
 
 
+
 SELECT 
         count(match_id) AS `Innings`,
         sum(R) AS `Runs`,
