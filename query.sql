@@ -17,6 +17,7 @@ FROM ipl_batting
 ORDER BY `Runs` DESC LIMIT 25;
 
 
+
  #Most runs
 SELECT tb1.batsman AS `Player`,
        sum(tb1.Inn) AS `Innings`,
