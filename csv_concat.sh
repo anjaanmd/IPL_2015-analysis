@@ -8,17 +8,6 @@ head -1 `ls *_batting*.csv|head -n 1` > "../$series.batting.csv"
 
 for filename in *_batting*.csv; do sed 1d $filename >> "../$series.batting.csv";done
 
-
-#head -1 `ls second_innings_batting*.csv|head -n 1` > "../$series.second_innings_batting.csv"#
-
-#for filename in second_innings_batting*.csv; do sed 1d $filename >> "../$series.second_innings_batting.csv";done
-
-
-
-#head -1 `ls second_innings_bowling*.csv|head -n 1` > "../$series.second_innings_bowling.csv"
-
-#for filename in second_innings_bowling*.csv; do sed 1d $filename >> "../$series.second_innings_bowling.csv";done
-
 head -1 `ls *_bowling*.csv|head -n 1` > "../$series.bowling.csv"
 
 for filename in *_bowling*.csv; do sed 1d $filename >> "../$series.bowling.csv";done
