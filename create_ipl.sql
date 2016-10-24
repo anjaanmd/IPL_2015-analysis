@@ -17,7 +17,7 @@ CREATE TABLE ipl_match_details(
     )DEFAULT CHARSET=utf8;
  
 CREATE TABLE ipl_score_details(
-	innings_total INT NOT NULL,
+    innings_total INT NOT NULL,
     innings_extras INT NOT NULL,
     innings_wickets INT NOT NULL,
     innings_overs_bowled FLOAT(3,1) NOT NULL,
@@ -29,7 +29,8 @@ CREATE TABLE ipl_score_details(
     innings VARCHAR(7) NOT NULL,
     match_id INT NOT NULL,
     constraint foreign key for_key(match_id) REFERENCES ipl_match_details(match_id),
-    INDEX score_index (innings_total,innings_extras,innings_overs_bowled,innings_run_rate,innings_extras_lb,innings_extras_bye,innings_extras_wide,second_innings_total,second_innings_extras,second_innings_overs_bowled,second_innings_run_rate,second_innings_extras_lb,second_innings_extras_bye,second_innings_extras_wide,match_id)
+    INDEX score_index (innings_total,innings_wickets, innings_extras,innings_overs_bowled,innings_run_rate,
+	innings_extras_lb,innings_extras_bye,innings_extras_wide,innings_extras_nb, innings,match_id)
     )DEFAULT CHARSET=utf8;
 
 
