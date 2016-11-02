@@ -355,5 +355,36 @@ SELECT count(*) AS `Innings`,
        sum(M) AS `Minutes`,
        team AS `Team`
 FROM ipl_batting
-ORDER BY `Runs` DESC LIMIT 25;
+ORDER BY `Runs` DESC LIMIT 25; 
+
+
+#Most runs
+SELECT tb1.batsman AS `Player`,
+       sum(tb1.Inn) AS `Innings`,
+       sum(tb1.R) AS `Runs`,
+       sum(tb1.B) AS `Balls`,
+       sum(tb1. `Not out`) AS `NO`,
+       max(tb1.High) AS `Highest`,
+       cast((sum(tb1.R) / (sum(tb1.Inn) - sum(tb1.`Not out`))) AS DECIMAL(5,2)) `Average`,
+       cast((sum(tb1.R) * 100 / sum(tb1.B)) AS DECIMAL(5,2)) `SR`,
+       sum(tb1.fours) AS `4s`,
+       sum(tb1.sixes) AS `6s`,
+       sum(tb1.Min) AS `Minutes`
+FROM
+  (SELECT SUBSTRING_INDEX(batsman, '(', 1) AS `batsman`,
+          count(iplb.match_id) AS `Inn`,
+          sum(R) AS `R`,
+          sum(B) AS `B`,
+          sum(dismissal LIKE 'not%') AS 'Not out',
+          max(R) AS `High`,
+          sum(4s) AS `fours`,
+          sum(6s) AS `sixes`,
+          sum(M) AS `Min`,
+          team AS `Team`
+   FROM ipl_batting as iplb JOIN ipl_match_details as mtch on iplb.match_id = mtch.match_id where iplb.team!=mtch.winner 
+   GROUP BY `batsman`,
+            `team`) tb1
+GROUP BY `Player`
+ORDER BY `Runs` DESC LIMIT 25 INTO outfile '/var/lib/mysql-files/export/ipl/Most_runs_ipl.csv' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
 
