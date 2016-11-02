@@ -3,7 +3,8 @@ library(dplyr)
 
 match_details_ipl <- tbl_df(ipl_match_details %>% 
 								mutate(match= trimws(gsub('\"(.*?):.*', '\\1', match_title))) %>% 
-								mutate(`Match_no` = match(match, `match`))
+								arrange(match_date) %>%
+								mutate(`Match_no` = match(match, `match`)))
 
 
 #overall batting stats
@@ -51,7 +52,7 @@ batting_positionwise_ipl <- batting_ipl %>%
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									)
 
-								
+
 batting_orderwise_ipl <- bind_rows(batting_ipl %>% 
 								filter(`batting_order` %in% c(1,2,3,4))%>%
 								summarise(  
