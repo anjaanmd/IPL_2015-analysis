@@ -16,7 +16,7 @@ score_details_ipl = tbl_df(ipl_score_details)
 
 
 match_details_ipl <- tbl_df(ipl_match_details %>% 
-								mutate(match= trimws(gsub('\"(.*?):.*', '\\1', match_title))) %>% 
+								mutate(match= trimws(gsub("^\"|:.*$", "", match_title))) %>% 
 								arrange(match_date) %>%
 								mutate(`Match_no` = match(match, `match`)))
 
@@ -48,7 +48,7 @@ Overall_runs_ipl <- bind_rows(match_and_score_details_ipl %>%
 											`Leg-byes` = sum(innings_extras_lb),
 											`Byes` = sum(innings_extras_bye)
 														)%>%
-								mutate(`Result` = "All", `Teams` = "All teams")%>%
+								mutate(`Result` = "All", `Team` = "All teams")%>%
 								select(`Result`, `Team`,`Matches`, `Runs`,`Runs by Batsmen`, `Extras`,  everything()
 									),
 								match_and_score_details_ipl %>%
@@ -142,7 +142,7 @@ batting_inningswise_ipl <- batting_ipl %>%
 									`6s` = sum(`6s`),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									)%>%
-									mutate(`Result` = "All")
+									mutate(`Result` = "All") %>%
 								select(`Result`, `Innings` = innings, everything())
 
 batting_innings_resultwise_ipl <- bind_rows(batting_ipl %>% 
@@ -366,7 +366,8 @@ batting_orderwise_ipl <- bind_rows(batting_ipl %>%
 									) %>% 
 								mutate(`Order` = 'Lower order(8,9,10,11)' , `Result` = "All") %>%
 								select(`Result`, `Order`, everything()
-								),batting_ipl %>% 
+								),
+								batting_ipl %>% 
 								inner_join(match_details_ipl, by = "match_id") %>%
 								filter(team == winner) %>%
 								filter(`batting_order` %in% c(1,2,3,4))%>%
@@ -510,7 +511,8 @@ batting_matchwise_ipl <- batting_ipl %>%
 									`4s` = sum(`4s`),
 									`6s` = sum(`6s`),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
-									)
+									) %>%
+								select(`Match_no`, `Match`= `match`, `No. of matches` = `Matches`, everything())
 
 
 batting_groundwise_ipl <-  batting_ipl %>% 
@@ -530,6 +532,7 @@ batting_groundwise_ipl <-  batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
+							select(`Ground` = ground, `Location` = match_venue, everything()) %>%
 							arrange(desc(Runs), `Average`) 
 
 
@@ -547,7 +550,8 @@ batting_teamwise_ipl <- batting_ipl %>%
 									`4s` = sum(`4s`),
 									`6s` = sum(`6s`),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
-									)
+									) %>%
+								select(`Team` = team, everything())
 
 
 							
@@ -568,6 +572,7 @@ batting_when_losing_all_teams_ipl <- bind_rows(batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
+							select(`Team` = team, everything())%>%
 							arrange(desc(Runs), `Average`
 								) ,
 							batting_ipl %>% 
@@ -588,7 +593,7 @@ batting_when_losing_all_teams_ipl <- bind_rows(batting_ipl %>%
 									) %>%
 							arrange(desc(Runs), `Average`) %>% 
 							mutate(`team` = 'All') %>%
-							select(`team`, everything())
+							select(`Team` = team, everything())
 							)
 
 							
@@ -609,6 +614,7 @@ batting_when_winning_all_teams_ipl <- bind_rows(batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
+							select(`Team` = team, everything())%>%
 							arrange(desc(Runs), `Average`
 								) ,
 							batting_ipl %>% 
@@ -629,7 +635,7 @@ batting_when_winning_all_teams_ipl <- bind_rows(batting_ipl %>%
 									) %>%
 							arrange(desc(Runs), `Average`) %>% 
 							mutate(`team` = 'All') %>%
-							select(`team`, everything())
+							select(`Team` = team, everything())
 							)
 
 
@@ -751,6 +757,7 @@ most_runs_by_wicket_keeper <- batting_ipl %>%
 
 highest_score_ipl <- 	batting_ipl %>%
 							mutate(`Player` = trimws(gsub('\\(.*\\)','', batsman))) %>%
+							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
 									`Matches` = n_distinct(match_id),
