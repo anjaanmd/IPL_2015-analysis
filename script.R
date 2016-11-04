@@ -16,7 +16,7 @@ score_details_ipl = tbl_df(ipl_score_details)
 
 
 match_details_ipl <- tbl_df(ipl_match_details %>% 
-								mutate(match= trimws(gsub("^\"|:.*$", "", match_title))) %>% 
+								mutate(match= trimws(gsub("^\"|:.*$", "", match_title)), `Match_result` = trimws(gsub("^.*won", "", match_result))) %>% 
 								arrange(match_date) %>%
 								mutate(`Match_no` = match(match, `match`)))
 
@@ -498,9 +498,8 @@ batting_orderwise_ipl <- bind_rows(batting_ipl %>%
 
 batting_matchwise_ipl <- batting_ipl %>%
 								inner_join(match_details_ipl, by = "match_id")%>% 
-								group_by(`Match_no`,`match`)%>%
+								group_by(`Match_no`,`match`, team1, team2, winner, `Match_result`)%>%
 								summarise(  
-									`Matches` = n_distinct(match_id),  
 									`Number of batsmen` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
@@ -512,7 +511,7 @@ batting_matchwise_ipl <- batting_ipl %>%
 									`6s` = sum(`6s`),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-								select(`Match_no`, `Match`= `match`, `No. of matches` = `Matches`, everything())
+								select(`Match_no`, `Match`= `match`, everything())
 
 
 batting_groundwise_ipl <-  batting_ipl %>% 
