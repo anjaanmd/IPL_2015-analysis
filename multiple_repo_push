@@ -1,5 +1,5 @@
-git remote add bitbucket https://anjaanmd@bitbucket.org/anjaanmd/ipl_2015-analysis.git
 git remote add all https://github.com/anjaanmd/IPL_2015-analysis.git 
- git remote set-url --add --push all https://anjaanmd@bitbucket.org/anjaanmd/ipl_2015-analysis.git 
+git remote set-url --add --push all https://anjaanmd@bitbucket.org/anjaanmd/ipl_2015-analysis.git 
 git remote set-url --add --push all https://gitlab.com/anjaanmd/IPL_2015-analysis.git
+git remote set-url --add --push all https://github.com/anjaanmd/IPL_2015-analysis.git
 git push -u all master
