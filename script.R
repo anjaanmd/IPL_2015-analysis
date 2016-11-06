@@ -124,6 +124,70 @@ Overall_runs_ipl <- bind_rows(match_and_score_details_ipl %>%
 								)
 								)
 
+team_total_matchwise_ipl <- batting_ipl %>% 
+								inner_join(match_details_ipl, by = "match_id") %>% 
+								group_by(team, `Match_no`) %>% mutate(id = seq_len(n())) %>% 
+								summarise(`Individual Innings` = n(),
+									Runs = sum(R),
+									Balls = sum(B),
+									`Not out` = sum(grepl('not', dismissal)),
+									Highest = max(R),
+									`Average` = round(Runs/(`Individual Innings` - `Not out`), digits = 2),
+									SR = round(Runs * 100/Balls, digits = 2),
+									`4s` = sum(`4s`),
+									`6s` = sum(`6s`),
+									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
+								)
+
+team_total_team_and_matchwise <- bind_rows(team_total_matchwise_ipl %>%
+									filter(team == "Chennai Super Kings") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										),
+									team_total_matchwise_ipl %>%
+									filter(team == "Delhi Daredevils") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										),
+									team_total_matchwise_ipl %>%
+									filter(team == "Kings XI Punjab") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										),
+									team_total_matchwise_ipl %>%
+									filter(team == "Kolkata Knight Riders") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										),
+									team_total_matchwise_ipl %>%
+									filter(team == "Mumbai Indians") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										),
+									team_total_matchwise_ipl %>%
+									filter(team == "Rajasthan Royals") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										),
+									team_total_matchwise_ipl %>%
+									filter(team == "Royal Challengers Bangalore") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										),
+									team_total_matchwise_ipl %>%
+									filter(team == "Sunrisers Hyderabad") %>% 
+									arrange(`Match_no`) %>%
+									mutate(`match_no_for_team` = 1:n()) %>%
+									select(`Match_no for team` = `match_no_for_team`, everything()
+										)
+									)
 
 
 #batting stats_inningswise
