@@ -997,7 +997,7 @@ most_runs_in_losing_cause_ipl <- batting_ipl %>%
 							head(25)
 
 
-list_batting <- ls(pattern = '^batt.*ipl$|^Over.*ipl$|^high.*ipl$')
+list_batting <- ls(pattern = '^.*ipl$')
 
 ifelse(!dir.exists(file.path("files")), dir.create(file.path("files")), FALSE)
 
@@ -1008,6 +1008,6 @@ for (i in seq_along(list_batting)){
 # 	function(x) 
 # 	(write.csv(get(list_batting[x]), file = paste("files/", list_batting[x], ".csv", sep = ""), row.names = FALSE))
 # 	)
-for (i in seq_along(list_batting)){
-	View(get(list_batting[i]))
-	}
+# for (i in seq_along(list_batting)){
+# 	View(get(list_batting[i]))
+# 	}
