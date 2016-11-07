@@ -10,6 +10,8 @@ ipl_bowling <- dbGetQuery(conn = con, "SELECT * from ipl_bowling")
 ipl_match_details <- dbGetQuery(conn = con, "SELECT * from ipl_match_details")
 ipl_score_details <- dbGetQuery(conn = con, "SELECT * from ipl_score_details")
 
+dbDisconnect(conn = con)
+
 batting_ipl = tbl_df(ipl_batting)
 bowling_ipl = tbl_df(ipl_bowling)
 score_details_ipl = tbl_df(ipl_score_details)
@@ -283,7 +285,7 @@ batting_resultwise_ipl <- bind_rows(batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							mutate(`Teams` = 'Winning team') %>%
 							select(`Teams`, everything()
 								),
@@ -303,7 +305,7 @@ batting_resultwise_ipl <- bind_rows(batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							mutate(`Teams` = 'Losing team') %>%
 							select(`Teams`, everything())
 								)
@@ -370,8 +372,8 @@ batting_positionwise_ipl <- bind_rows(batting_ipl %>%
 								mutate(`Result` = "Lost") %>%
 								select(`Result`, `Batting Order` = batting_order, everything()
 								) )%>%
-								arrange(`Batting Order`) 
-								
+								arrange(`Batting Order`) %>% 
+								mutate(Average = ifelse(Average == Inf, Runs, Average))
 
 
 batting_orderwise_ipl <- bind_rows(batting_ipl %>% 
@@ -596,7 +598,7 @@ batting_groundwise_ipl <-  batting_ipl %>%
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
 							select(`Ground` = ground, `Location` = match_venue, everything()) %>%
-							arrange(desc(Runs), `Average`) 
+							arrange(desc(Runs), desc(`Average`)) 
 
 
 batting_teamwise_ipl <- batting_ipl %>% 
@@ -636,7 +638,7 @@ batting_when_losing_all_teams_ipl <- bind_rows(batting_ipl %>%
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
 							select(`Team` = team, everything())%>%
-							arrange(desc(Runs), `Average`
+							arrange(desc(Runs), desc(`Average`)
 								) ,
 							batting_ipl %>% 
 							inner_join(match_details_ipl, by = "match_id") %>%
@@ -654,7 +656,7 @@ batting_when_losing_all_teams_ipl <- bind_rows(batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							mutate(`team` = 'All') %>%
 							select(`Team` = team, everything())
 							)
@@ -678,7 +680,7 @@ batting_when_winning_all_teams_ipl <- bind_rows(batting_ipl %>%
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
 							select(`Team` = team, everything())%>%
-							arrange(desc(Runs), `Average`
+							arrange(desc(Runs), desc(`Average`)
 								) ,
 							batting_ipl %>% 
 							inner_join(match_details_ipl, by = "match_id") %>%
@@ -696,7 +698,7 @@ batting_when_winning_all_teams_ipl <- bind_rows(batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							mutate(`team` = 'All') %>%
 							select(`Team` = team, everything())
 							)
@@ -707,7 +709,7 @@ most_runs_ipl <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`, team) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),
+#									`Matches` = n_distinct(match_id),
 									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
@@ -721,7 +723,7 @@ most_runs_ipl <- batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							head(25)
 
 most_runs_first_innings <- batting_ipl %>%
@@ -730,7 +732,7 @@ most_runs_first_innings <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),
+#									`Matches` = n_distinct(match_id),
 									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
@@ -744,7 +746,7 @@ most_runs_first_innings <- batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							head(25)
 
 
@@ -756,29 +758,7 @@ most_runs_second_innings <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),`Individual Innings` = n(), 
-									Runs = sum(R),
-									Balls = sum(B),
-									`Not out` = sum(grepl('not', dismissal)),
-									Highest = max(R),
-									`Average` = round(Runs/(`Individual Innings` - `Not out`), digits = 2),
-									SR = round(Runs * 100/Balls, digits = 2),
-									`Team Runs %`= round(Runs*100/sum(innings_total), digits = 2),
-									`4s` = sum(`4s`),
-									`6s` = sum(`6s`),
-									`Min` = sum(M),
-									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
-									) %>%
-							arrange(desc(Runs), `Average`) %>% 
-							head(25)
-
-most_runs_by_captain <- batting_ipl %>%
-							filter(grepl('captain', batsman)) %>%
-							mutate(`Player` = trimws(gsub('\\(.*\\)','', batsman))) %>%
-							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
-							group_by(`Player`) %>%
-							summarise(  
-									`Matches` = n_distinct(match_id),
+#									`Matches` = n_distinct(match_id),
 									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
@@ -792,7 +772,30 @@ most_runs_by_captain <- batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`)
+							arrange(desc(Runs), desc(`Average`)) %>% 
+							head(25)
+
+most_runs_by_captain <- batting_ipl %>%
+							filter(grepl('captain', batsman)) %>%
+							mutate(`Player` = trimws(gsub('\\(.*\\)','', batsman))) %>%
+							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
+							group_by(`Player`) %>%
+							summarise(  
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
+									Runs = sum(R),
+									Balls = sum(B),
+									`Not out` = sum(grepl('not', dismissal)),
+									Highest = max(R),
+									`Average` = round(Runs/(`Individual Innings` - `Not out`), digits = 2),
+									SR = round(Runs * 100/Balls, digits = 2),
+									`Team Runs %`= round(Runs*100/sum(innings_total), digits = 2),
+									`4s` = sum(`4s`),
+									`6s` = sum(`6s`),
+									`Min` = sum(M),
+									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
+									) %>%
+							arrange(desc(Runs), desc(`Average`))
 
 
 
@@ -802,7 +805,7 @@ most_runs_by_wicket_keeper <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),
+#									`Matches` = n_distinct(match_id),
 									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
@@ -816,29 +819,33 @@ most_runs_by_wicket_keeper <- batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`)
+							arrange(desc(Runs), desc(`Average`))
 
-highest_score_ipl <- 	batting_ipl %>%
+highest_scores_ipl <- batting_ipl %>%
 							mutate(`Player` = trimws(gsub('\\(.*\\)','', batsman))) %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
-							group_by(`Player`) %>%
-							summarise(  
-									`Matches` = n_distinct(match_id),
-									`Individual Innings` = n(), 
-									Runs = sum(R),
-									Balls = sum(B),
-									`Not out` = sum(grepl('not', dismissal)),
-									Highest = max(R),
-									`Average` = round(Runs/(`Individual Innings` - `Not out`), digits = 2),
-									SR = round(Runs * 100/Balls, digits = 2),
-									`Team Runs %`= round(Runs*100/sum(innings_total), digits = 2),
-									`4s` = sum(`4s`),
-									`6s` = sum(`6s`),
-									`Min` = sum(M),
-									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
+							mutate(	SR = round(R * 100/B, digits = 2),
+									`Team Runs %`= round(R*100/innings_total, digits = 2),
+									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/R, digits = 2),
+									Result = paste(ifelse(winner == team, "Won", "Lost"), Match_result, sep = " ")
 									) %>%
-							arrange(desc(Highest), `Average`) %>%
-							head(25)					
+							select( `Player`,
+									Runs = R,
+									Dismissal = dismissal,
+									Balls = B,
+									`4s`,
+									`6s`,
+									SR,
+									`Min` = M,
+									Team = team,
+									Opponent = opposition,
+									Result,
+									Match = `match`,
+									`Match Date` = match_date,
+									`Team Runs %`,
+									`Boundaries %`) %>%
+							arrange(desc(Runs)) %>% 
+							head(25)				
 
 
 highest_sr_ipl <- batting_ipl %>%
@@ -846,7 +853,8 @@ highest_sr_ipl <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),`Individual Innings` = n(), 
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
 									`Not out` = sum(grepl('not', dismissal)),
@@ -861,7 +869,10 @@ highest_sr_ipl <- batting_ipl %>%
 									) %>%
 							filter((`Average` > 25.25), Runs > 100) %>%
 							arrange(desc(SR), `Average`) %>%
-							head(25)					
+							head(25)
+
+
+
 
 highest_average_ipl  <- batting_ipl %>%
 							mutate(`Player` = trimws(gsub('\\(.*\\)','', batsman))) %>%
@@ -890,7 +901,8 @@ most_fours_ipl <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),`Individual Innings` = n(), 
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
 									`Not out` = sum(grepl('not', dismissal)),
@@ -912,7 +924,8 @@ most_sixes_ipl <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),`Individual Innings` = n(), 
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
 									`Not out` = sum(grepl('not', dismissal)),
@@ -933,7 +946,8 @@ most_minutes_on_crease_ipl <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),`Individual Innings` = n(), 
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
 									`Not out` = sum(grepl('not', dismissal)),
@@ -956,7 +970,8 @@ most_runs_in_winning_cause_ipl <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),`Individual Innings` = n(), 
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
 									`Not out` = sum(grepl('not', dismissal)),
@@ -969,7 +984,7 @@ most_runs_in_winning_cause_ipl <- batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							head(25)
 
 
@@ -980,7 +995,8 @@ most_runs_in_losing_cause_ipl <- batting_ipl %>%
 							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
 							group_by(`Player`) %>%
 							summarise(  
-									`Matches` = n_distinct(match_id),`Individual Innings` = n(), 
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
 									Runs = sum(R),
 									Balls = sum(B),
 									`Not out` = sum(grepl('not', dismissal)),
@@ -993,8 +1009,53 @@ most_runs_in_losing_cause_ipl <- batting_ipl %>%
 									`Min` = sum(M),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 									) %>%
-							arrange(desc(Runs), `Average`) %>% 
+							arrange(desc(Runs), desc(`Average`)) %>% 
 							head(25)
+
+most_percentage_of_runs_contributed_to_team <- batting_ipl %>%
+							mutate(`Player` = trimws(gsub('\\(.*\\)','', batsman))) %>%
+							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
+							group_by(`Player`, team) %>%
+							summarise(
+#							`Matches` = n_distinct(match_id),
+							`Individual Innings` = n(),
+							Runs = sum(R),
+							Balls = sum(B),
+							`Not out` = sum(grepl('not', dismissal)),
+							Highest = max(R),
+							`Average` = round(Runs/(`Individual Innings` - `Not out`), digits = 2),
+							SR = round(Runs * 100/Balls, digits = 2),
+							`Team Runs %`= round(Runs*100/sum(innings_total), digits = 2),
+							`4s` = sum(`4s`),
+							`6s` = sum(`6s`),
+							`Min` = sum(M),
+							`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
+							)  %>% arrange(desc(`Team Runs %`)) %>% head(25)
+
+
+most_fifty_plus_scores <- batting_ipl %>%
+							mutate(`Player` = trimws(gsub('\\(.*\\)','', batsman))) %>%
+							inner_join(match_and_score_details_ipl, by =c("match_id", "team" = "Batting Team")) %>%
+							group_by(`Player`) %>%
+							summarise(  
+#									`Matches` = n_distinct(match_id),
+									`Individual Innings` = n(), 
+									Runs = sum(R),
+									Balls = sum(B),
+									`Not out` = sum(grepl('not', dismissal)),
+									Highest = max(R),
+									`Average` = round(Runs/(`Individual Innings` - `Not out`), digits = 2),
+									SR = round(Runs * 100/Balls, digits = 2),
+									`50plus` = sum(R>50),
+									`Team Runs %`= round(Runs*100/sum(innings_total), digits = 2),
+									`4s` = sum(`4s`),
+									`6s` = sum(`6s`),
+									`Min` = sum(M),
+									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
+									) %>% 
+							arrange(desc(`50plus`), `Individual Innings`, desc(Runs)) %>%
+							head(20)
+
 
 
 list_batting <- ls(pattern = '^.*ipl$')
