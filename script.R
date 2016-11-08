@@ -39,7 +39,7 @@ batting_overall_ipl <- summarise( batting_ipl,
 								`6s` = sum(`6s`),
 								`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 								)
-#write.csv(batting_overall_ipl, "files/batting_overall_ipl.csv", row.names = FALSE)
+
 Overall_runs_ipl <- bind_rows(match_and_score_details_ipl %>%
 								summarise(`Matches` = n_distinct(match_id),
 											`Runs` = sum(innings_total),
@@ -79,23 +79,10 @@ Overall_runs_ipl <- bind_rows(match_and_score_details_ipl %>%
 											)%>%
 								mutate(`Result` = "Lost", `Team` = "All teams")%>%
 								select(`Result`, `Team`,`Matches`, `Runs`,`Runs by Batsmen`, `Extras`,  everything()
-								),
-								match_and_score_details_ipl %>%
-								filter(winner == `Batting Team`) %>%
-								group_by(`Batting Team`) %>%
-								summarise(`Matches` = n_distinct(match_id),
-											`Runs` = sum(innings_total),
-											`Extras` = sum(innings_extras),
-											`Runs by Batsmen` = `Runs` - `Extras`,
-											`Wides` = sum(innings_extras_wide),
-											`No Balls` = sum(innings_extras_nb),
-											`Leg-byes` = sum(innings_extras_lb),
-											`Byes` = sum(innings_extras_bye)
-											)%>%
-								mutate(`Result` = "Won")%>%
-								select(`Result`, `Team`= `Batting Team`,`Matches`, `Runs`,`Runs by Batsmen`, `Extras`,  everything()
-								),
-								match_and_score_details_ipl %>%
+								))
+								
+#write.csv(batting_overall_ipl, "files/batting_overall_ipl.csv", row.names = FALSE)
+Overall_runs_by_teams_ipl <- bind_rows(match_and_score_details_ipl %>%
 								filter(winner != `Batting Team`) %>%
 								group_by(`Batting Team`) %>%
 								summarise(`Matches` = n_distinct(match_id),
@@ -108,6 +95,20 @@ Overall_runs_ipl <- bind_rows(match_and_score_details_ipl %>%
 											`Byes` = sum(innings_extras_bye)
 											)%>%
 								mutate(`Result` = "Lost")%>%
+								select(`Result`, `Team`= `Batting Team`,`Matches`, `Runs`,`Runs by Batsmen`, `Extras`,  everything()
+								),match_and_score_details_ipl %>%
+								filter(winner == `Batting Team`) %>%
+								group_by(`Batting Team`) %>%
+								summarise(`Matches` = n_distinct(match_id),
+											`Runs` = sum(innings_total),
+											`Extras` = sum(innings_extras),
+											`Runs by Batsmen` = `Runs` - `Extras`,
+											`Wides` = sum(innings_extras_wide),
+											`No Balls` = sum(innings_extras_nb),
+											`Leg-byes` = sum(innings_extras_lb),
+											`Byes` = sum(innings_extras_bye)
+											)%>%
+								mutate(`Result` = "Won")%>%
 								select(`Result`, `Team`= `Batting Team`,`Matches`, `Runs`,`Runs by Batsmen`, `Extras`,  everything()
 								),
 								match_and_score_details_ipl %>%
@@ -124,7 +125,7 @@ Overall_runs_ipl <- bind_rows(match_and_score_details_ipl %>%
 								mutate(`Result` = "All")%>%
 								select(`Result`, `Team`= `Batting Team`, `Matches`, `Runs`,`Runs by Batsmen`, `Extras`,  everything()
 								)
-								)
+								) %>% mutate(Result = factor(Result, levels = c("All", "Won", "Lost")))
 
 team_total_matchwise_ipl <- batting_ipl %>% 
 								inner_join(match_details_ipl, by = "match_id") %>% 
