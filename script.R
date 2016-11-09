@@ -125,7 +125,10 @@ Overall_runs_by_teams_ipl <- bind_rows(match_and_score_details_ipl %>%
 								mutate(`Result` = "All")%>%
 								select(`Result`, `Team`= `Batting Team`, `Matches`, `Runs`,`Runs by Batsmen`, `Extras`,  everything()
 								)
-								) %>% mutate(Result = factor(Result, levels = c("All", "Won", "Lost")))
+								) %>% mutate(Result = factor(Result, levels = c("All", "Won", "Lost")) ) %>%
+								arrange(desc(Runs))
+								
+
 
 team_total_matchwise_ipl <- batting_ipl %>% 
 								inner_join(match_details_ipl, by = "match_id") %>% 
