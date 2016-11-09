@@ -26,6 +26,5 @@ Then these files are added to a MySQL database.
 
 
 <div>
-    <a href="https://plot.ly/~stromben/4540/" target="_blank" title="check_title" style="display: block; text-align: center;"><img src="runs.svg" alt="check_alt" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="stromben:4540"  src="https://plot.ly/embed.js" async></script>
+    <a href="https://rawgit.com/anjaanmd/IPL_2015-analysis/draft/files/runs.html" target="_blank" title="check_title" style="display: block; text-align: center;"><img src="https://cdn.rawgit.com/anjaanmd/IPL_2015-analysis/draft/runs.svg" alt="check_alt" style="max-width: 100%;width: 600px;"  width="600"/></a>
 </div>
