@@ -48,7 +48,7 @@ theme_mine_legend_bottom <- function (base_size = 12, color = "brown", base_fami
             axis.line = element_line(), axis.line.y = element_blank(), 
             legend.background = element_rect(), legend.position = "right", 
             legend.direction = "horizontal", legend.box = "vertical", 
-            legend.title = element_blank(),
+            legend.title = element_blank(),legend.text=element_text(size=8),
 #           legend.direction = "vertical", legend.box = "vertical",
             panel.grid = element_line(colour = NULL, linetype = 0), 
             panel.grid.major = element_line(colour = "black"), 
@@ -83,33 +83,9 @@ theme_mine_no_legend <- function (base_size = 12, color = "brown", base_family =
             panel.grid.major = element_line(colour = "black"), 
             panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(), 
 #           plot.title = element_text(hjust = 0, vjust = 1, face = "bold"), 
-            plot.margin = unit(c(20,5,20,5),"mm"), strip.background = element_rect()))
+            plot.margin = unit(c(25,5,15,5),"mm"), strip.background = element_rect()))
 }
 
-grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) {
-
-  plots <- list(...)
-  position <- match.arg(position)
-  g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
-  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
-  lheight <- sum(legend$height)
-  lwidth <- sum(legend$width)
-  gl <- lapply(plots, function(x) x + theme(legend.position="none"))
-  gl <- c(gl, ncol = ncol, nrow = nrow)
-
-  combined <- switch(position,
-                     "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
-                                            legend,
-                                            ncol = 1,
-                                            heights = unit.c(unit(1, "mm"), lheight/3)),
-                     "right" = arrangeGrob(do.call(arrangeGrob, gl),
-                                           legend,
-                                           ncol = 2,
-                                           widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
-  grid.newpage()
-  grid.draw(combined)
-
-}
 
 g_legend <- function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
