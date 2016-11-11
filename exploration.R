@@ -1,3 +1,14 @@
+
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(tidyr)
+library(dplyr)
+library(ggthemes)
+
+
+
+
 overall_runs_by_team_bar <- ggplot(Overall_runs_by_teams_ipl,
                                    aes(
                                      x = reorder(Team, -Runs),
@@ -6,7 +17,7 @@ overall_runs_by_team_bar <- ggplot(Overall_runs_by_teams_ipl,
                                      text = paste("Team: ", reorder(Team, -Runs))
                                    )) +
   geom_bar(position = "dodge", stat = "identity") + ggtitle("Total Runs scored by the Teams") + xlab("") + ylab("Runs") +
-  coord_flip() + theme_mine()
+  coord_flip() + theme_mine_pie()
 
 #ggplotly(overall_runs_by_team_gg, tooltip = c("text", "y", "fill"))
 
@@ -150,3 +161,34 @@ legend_extras <- g_legend(ggplot(overall_extras_lost,
        aes(x = Result, y = Runs, fill = Extras_class)) +
   geom_bar(stat = "identity", width = 1) +
 	theme_mine_legend_bottom())
+
+#team_total_matchwise
+
+all_total_ipl <- ggplot(team_total_matchwise_ipl, 
+       aes(
+         x = `Match_no`,
+         y = Runs,
+         fill = `Innings`,
+         text = paste(`Match`, "\n", `Team`))) +
+  geom_bar(
+    position = "dodge", 
+    stat = "identity") + ggtitle("Total for every innings") + xlab("Match_no") + ylab("Runs") +
+   theme_mine()
+
+all_total_ipl <- ggplot(team_total_matchwise_ipl, 
+                        aes(
+                          x = `Match_no`,
+                          y = Runs,
+                          text = paste(`Match`, "\n", `Team`))) +
+  geom_line(
+    ) + ggtitle("Total for every innings") + xlab("Match_no") + ylab("Runs") +
+  theme_mine()
+
+ggplotly(ggplot(team_total_matchwise_ipl)+ 
+           geom_line(aes(x=`Match_no`, y=`Boundaries %`), color = "brown2")+ 
+           geom_hline(yintercept = 60.67, color = "brown4")+ 
+           annotate("text", x = 59, y = 80, label = "Overall:60.67 %")+ 
+           xlab("Match") + ylab("Boundaries Percentage") + 
+           ggtitle("Percentage of Runs in Boundaries per Match")+ theme_mine()+
+           annotate("segment", x = 59, xend = 59, y = 78,  yend = 62, 
+                    colour="brown1", size=0.4, arrow=arrow(length=unit(.2, "cm"))))
