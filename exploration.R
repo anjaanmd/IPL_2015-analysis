@@ -5,7 +5,7 @@ library(grid)
 library(tidyr)
 library(dplyr)
 library(ggthemes)
-
+library(plotly)
 
 
 
@@ -163,8 +163,35 @@ legend_extras <- g_legend(ggplot(overall_extras_lost,
 	theme_mine_legend_bottom())
 
 #team_total_matchwise
+team_total_matchwise_ipl <- team_total_matchwise_ipl %>% 
+                              mutate(`Runs from boundaries` = ((`4s`*4)+(`6s`*6)))
 
-all_total_ipl <- ggplot(team_total_matchwise_ipl, 
+match_aggregates_ipl <- batting_ipl %>% 
+  inner_join(match_and_score_details_ipl, by = c("match_id", "team"="Batting Team")) %>% 
+  group_by( `match`,`Match_no`, match_date, team1, team2, winner, match_result) %>% 
+  #								mutate(id = seq_len(n())) %>% 
+  summarise(`Individual Innings` = n(),
+            Runs = sum(R),
+            Balls = sum(B),
+            `Not out` = sum(grepl('not', dismissal)),
+            Highest = max(R),
+            `Average` = round(Runs/(`Individual Innings` - `Not out`), digits = 2),
+            SR = round(Runs * 100/Balls, digits = 2),
+            `4s` = sum(`4s`),
+            `6s` = sum(`6s`),
+            `Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
+  ) %>% arrange(`Match_no`) %>% 
+  select( `Match` = `match`,
+         `Individual Innings`, `Runs`, `Balls`, `Not out`, `Highest`,
+         `Average`, `SR`, `4s`, `6s`, `Boundaries %`,
+         `Match_date` = `match_date`, `Match_no`,
+         `Team1` = `team1`, `Team2` = team2, `Winner` = winner, 
+         `Match_Result` = match_result) %>% 
+  mutate(`Runs from boundaries` = ((`4s`*4)+(`6s`*6)))
+
+
+
+all_total_ipl_bar <- ggplot(team_total_matchwise_ipl, 
        aes(
          x = `Match_no`,
          y = Runs,
@@ -172,23 +199,35 @@ all_total_ipl <- ggplot(team_total_matchwise_ipl,
          text = paste(`Match`, "\n", `Team`))) +
   geom_bar(
     position = "dodge", 
-    stat = "identity") + ggtitle("Total for every innings") + xlab("Match_no") + ylab("Runs") +
+    stat = "identity") + 
+    ggtitle("Total for every innings") + xlab("Match_no") + ylab("Runs") +
    theme_mine()
 
-all_total_ipl <- ggplot(team_total_matchwise_ipl, 
-                        aes(
-                          x = `Match_no`,
-                          y = Runs,
-                          text = paste(`Match`, "\n", `Team`))) +
-  geom_line(
-    ) + ggtitle("Total for every innings") + xlab("Match_no") + ylab("Runs") +
+
+
+all_aggregate_ipl_bar <- ggplot(data= match_aggregates_ipl, 
+                        aes(x = `Match_no`,
+    y = Runs,text = paste(`Match`, ":", `Team1`, "vs", Team2, Winner, Match_Result, sep = " "))) +
+  geom_bar( stat = "identity", fill = "coral") +
+  geom_point(aes(x=`Match_no`, y=`Runs from boundaries`), shape = 45, size =14, color = "coral4")+ 
+  ggtitle("Match Aggregates") + xlab("Match_no") + ylab("Runs") +
   theme_mine()
 
-ggplotly(ggplot(team_total_matchwise_ipl)+ 
+boundaries_percentage_per_match_line <- ggplot(team_total_matchwise_ipl)+ 
            geom_line(aes(x=`Match_no`, y=`Boundaries %`), color = "brown2")+ 
            geom_hline(yintercept = 60.67, color = "brown4")+ 
-           annotate("text", x = 59, y = 80, label = "Overall:60.67 %")+ 
+           annotate("text", x = 57, y = 80, label = "Overall: 60.67 %")+ 
            xlab("Match") + ylab("Boundaries Percentage") + 
            ggtitle("Percentage of Runs in Boundaries per Match")+ theme_mine()+
            annotate("segment", x = 59, xend = 59, y = 78,  yend = 62, 
-                    colour="brown1", size=0.4, arrow=arrow(length=unit(.2, "cm"))))
+                    colour="brown4", size=0.4, arrow=arrow(length=unit(.2, "cm")))
+
+highest_score_in_every_match <- ggplot(team_total_matchwise_ipl)+ 
+           geom_line(aes(x=`Match_no`, y=`Highest`), color = "brown2")+ 
+           geom_line(aes(x=`Match_no`, y=((`4s`*4)+(`6s`*6)), color = "yellow"))+
+           geom_hline(yintercept = 133, color = "brown4")+ ylim(0,160)+
+           annotate("text", x = 57, y = 153, label = "Overall highest: 133")+ 
+           xlab("Match") + ylab("Runs") + 
+           ggtitle("Highest score and Runs in Boundaries in every Match")+ theme_mine()+
+           annotate("segment", x = 59, xend = 59, y = 150,  yend = 135, 
+                    colour="brown4", size=0.4, arrow=arrow(length=unit(.2, "cm")))

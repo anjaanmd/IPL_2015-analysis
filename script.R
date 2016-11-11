@@ -145,10 +145,11 @@ team_total_matchwise_ipl <- batting_ipl %>%
 									`6s` = sum(`6s`),
 									`Boundaries %` = round(((`6s`*6)+(`4s`*4))*100/Runs, digits = 2)
 								) %>% arrange(`Match_no`, innings.x) %>% 
-                select(`Team` = `team`, `Innings` = innings.x, `Match` = `match`,
-                       `Individual Innings`, `Runs`, `Balls`, `Not out`, `Highest`,
-                       `Average`, `SR`, `4s`, `6s`, `Boundaries %`,
-                       `Match_date` = `match_date`, `Match_no`)
+                				select(`Team` = `team`, `Innings` = innings.x, `Match` = `match`,
+                      			`Individual Innings`, `Runs`, `Balls`, `Not out`, `Highest`,
+                      			`Average`, `SR`, `4s`, `6s`, `Boundaries %`,
+                   			    `Match_date` = `match_date`, `Match_no`) %>%
+                mutate(Average = ifelse(!is.finite(Average), as.numeric(Runs), Average))
 
 
 team_total_team_and_matchwise <- bind_rows(team_total_matchwise_ipl %>%
@@ -383,7 +384,7 @@ batting_positionwise_ipl <- bind_rows(batting_ipl %>%
 								select(`Result`, `Batting Order` = batting_order, everything()
 								) )%>%
 								arrange(`Batting Order`) %>% 
-								mutate(Average = ifelse(Average == Inf, Runs, Average))
+								mutate(Average = ifelse(!is.finite(Average), Runs, Average))
 
 
 batting_orderwise_ipl <- bind_rows(batting_ipl %>% 
@@ -1073,7 +1074,8 @@ list_batting <- ls(pattern = '^.*ipl$')
 ifelse(!dir.exists(file.path("files")), dir.create(file.path("files")), FALSE)
 
 for (i in seq_along(list_batting)){
-	write.csv(get(list_batting[i]), file = paste("files/", list_batting[i], ".csv", sep = ""), row.names = FALSE)}
+	write.csv(get(list_batting[i]), file = paste("files/", list_batting[i], ".csv", sep = ""), row.names = FALSE,
+          fileEncoding='utf8')}
 
 # #lapply(seq_along(list_batting), 
 # 	function(x) 
