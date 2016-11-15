@@ -1083,4 +1083,3 @@ for (i in seq_along(list_batting)){
 # 	)
 # for (i in seq_along(list_batting)){
 # 	View(get(list_batting[i]))
-# 	}

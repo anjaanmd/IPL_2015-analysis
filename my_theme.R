@@ -1,93 +1,130 @@
+
 library(ggplot2)
 library(gridExtra)
 library(grid)
 library(ggthemes)
 
-theme_mine_pie <- function (base_size = 12, color = "brown", base_family = "helvetica") 
+theme_mine_pie <- function (base_size = 12, color = "brown", base_family = "helvetica")
 {
     colorhex <- ggthemes_data$wsj$bg[color]
-    (theme_foundation(base_size = base_size, base_family = base_family) + 
-        theme(line = element_line(linetype = 1, colour = "black"), 
-            rect = element_rect(fill = colorhex, linetype = 0, 
-                colour = NA), text = element_text(colour = "black"), 
-            title = element_text(family = base_family, size = rel(1.5)), 
+    (theme_foundation(base_size = base_size, base_family = base_family) +
+        theme(line = element_line(linetype = 1, colour = "black"),
+            rect = element_rect(fill = colorhex, linetype = 0,
+                colour = NA), text = element_text(colour = "black"),
+            title = element_text(family = base_family, size = rel(1.5)),
             axis.title = element_text(face = "bold",size = rel(.75)),
-            axis.text = element_text(face = "bold", 
-                size = rel(1)), axis.text.x = element_text(colour = NULL),               
+            axis.text = element_text(face = "bold",
+                size = rel(1)), axis.text.x = element_text(colour = NULL),
 #           axis.title.y = element_text(angle=90,vjust =2),
 #           axis.title.x = element_text(vjust = -0.2),
-            axis.text.y = element_text(colour = NULL), axis.ticks = element_line(colour = NULL), 
-            axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL), 
-            axis.line = element_line(), axis.line.y = element_blank(), 
-            legend.background = element_rect(), legend.position = "right", 
-#           legend.direction = "horizontal", legend.box = "vertical", 
+            axis.text.y = element_text(colour = NULL), axis.ticks = element_line(colour = NULL),
+            axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL),
+            axis.line = element_line(), axis.line.y = element_blank(),
+            legend.background = element_rect(), legend.position = "right",
+#           legend.direction = "horizontal", legend.box = "vertical",
             legend.title = element_blank(),
             legend.direction = "vertical", legend.box = "vertical",
-            panel.grid = element_line(colour = NULL, linetype = 0), 
-            panel.grid.major = element_line(colour = "black"), 
-            panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(), 
-            plot.title = element_text(hjust = 0, face = "bold"), 
+            panel.grid = element_line(colour = NULL, linetype = 0),
+            panel.grid.major = element_line(colour = "black"),
+            panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
+            plot.title = element_text(hjust = 0, face = "bold"),
             plot.margin = unit(c(10,5,5,5),"mm"), strip.background = element_rect()))
 }
 
+#
+# theme_mine_legend_bottom <- function (base_size = 12, color = "brown", base_family = "helvetica")
+# {
+#     colorhex <- ggthemes_data$wsj$bg[color]
+#     (theme_foundation(base_size = base_size, base_family = base_family) +
+#         theme(line = element_line(linetype = 1, colour = "black"),
+#             rect = element_rect(fill = colorhex, linetype = 0,
+#                 colour = NA), text = element_text(colour = "black"),
+#             title = element_text(family = base_family, size = rel(1.5)),
+#             axis.title = element_text(face = "bold",size = rel(.75)),
+#             axis.text = element_text(face = "bold",
+#                 size = rel(1)), axis.text.x = element_text(colour = NULL),
+# #           axis.title.y = element_text(angle=90,vjust =2),
+# #           axis.title.x = element_text(vjust = -0.2),
+#             axis.text.y = element_text(colour = NULL), axis.ticks = element_line(colour = NULL),
+#             axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL),
+#             axis.line = element_line(), axis.line.y = element_blank(),
+#             legend.background = element_rect(), legend.position = "right",
+#             legend.direction = "horizontal", legend.box = "vertical",
+#             legend.title = element_blank(),legend.text=element_text(size=8),
+# #           legend.direction = "vertical", legend.box = "vertical",
+#             panel.grid = element_line(colour = NULL, linetype = 0),
+#             panel.grid.major = element_line(colour = "black"),
+#             panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
+#             plot.title = element_text(hjust = 0, face = "bold"),
+#             plot.margin = unit(c(10,5,5,5),"mm"), strip.background = element_rect()))
+# }
+#
 
-theme_mine_legend_bottom <- function (base_size = 12, color = "brown", base_family = "helvetica") 
+theme_mine_no_legend <- function (base_size = 12, color = "brown", base_family = "helvetica")
 {
     colorhex <- ggthemes_data$wsj$bg[color]
-    (theme_foundation(base_size = base_size, base_family = base_family) + 
-        theme(line = element_line(linetype = 1, colour = "black"), 
-            rect = element_rect(fill = colorhex, linetype = 0, 
-                colour = NA), text = element_text(colour = "black"), 
-            title = element_text(family = base_family, size = rel(1.5)), 
-            axis.title = element_text(face = "bold",size = rel(.75)),
-            axis.text = element_text(face = "bold", 
-                size = rel(1)), axis.text.x = element_text(colour = NULL),               
-#           axis.title.y = element_text(angle=90,vjust =2),
-#           axis.title.x = element_text(vjust = -0.2),
-            axis.text.y = element_text(colour = NULL), axis.ticks = element_line(colour = NULL), 
-            axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL), 
-            axis.line = element_line(), axis.line.y = element_blank(), 
-            legend.background = element_rect(), legend.position = "right", 
-            legend.direction = "horizontal", legend.box = "vertical", 
-            legend.title = element_blank(),legend.text=element_text(size=8),
-#           legend.direction = "vertical", legend.box = "vertical",
-            panel.grid = element_line(colour = NULL, linetype = 0), 
-            panel.grid.major = element_line(colour = "black"), 
-            panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(), 
-            plot.title = element_text(hjust = 0, face = "bold"), 
-            plot.margin = unit(c(10,5,5,5),"mm"), strip.background = element_rect()))
-}
-
-
-theme_mine_no_legend <- function (base_size = 12, color = "brown", base_family = "helvetica") 
-{
-    colorhex <- ggthemes_data$wsj$bg[color]
-    (theme_foundation(base_size = base_size, base_family = base_family) + 
-        theme(line = element_line(linetype = 1, colour = "black"), 
-            rect = element_rect(fill = colorhex, linetype = 0, 
-                colour = NA), text = element_text(colour = "black"), 
-            title = element_text(family = base_family, size = rel(1.5)), 
+    (theme_foundation(base_size = base_size, base_family = base_family) +
+        theme(line = element_line(linetype = 1, colour = "black"),
+            rect = element_rect(fill = colorhex, linetype = 0,
+                colour = NA), text = element_text(colour = "black"),
+            title = element_text(family = base_family, size = rel(1.5)),
             axis.title = element_blank(),
-            axis.text = element_blank(), axis.text.x = element_text(colour = NULL),               
+            axis.text = element_blank(), axis.text.x = element_text(colour = NULL),
 #           axis.title.y = element_text(angle=90,vjust =2),
 #           axis.title.x = element_text(vjust = -0.2),
-            axis.text.y = element_blank(), axis.ticks = element_blank(), 
-            axis.ticks.y = element_blank(), axis.ticks.x = element_blank(), 
-            axis.line = element_line(), axis.line.y = element_blank(), 
+            axis.text.y = element_blank(), axis.ticks = element_blank(),
+            axis.ticks.y = element_blank(), axis.ticks.x = element_blank(),
+            axis.line = element_line(), axis.line.y = element_blank(),
             legend.title = element_blank(),
             legend.position = "none",
-#           legend.background = element_rect(), legend.position = "right", 
-#           legend.direction = "horizontal", legend.box = "vertical", 
+#           legend.background = element_rect(), legend.position = "right",
+#           legend.direction = "horizontal", legend.box = "vertical",
 #           legend.title = element_blank(),
 #           legend.direction = "vertical", legend.box = "vertical",
-            panel.grid = element_line(colour = NULL, linetype = 0), 
-            panel.grid.major = element_line(colour = "black"), 
-            panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(), 
-#           plot.title = element_text(hjust = 0, vjust = 1, face = "bold"), 
+            panel.grid = element_line(colour = NULL, linetype = 0),
+ #           panel.grid.major = element_line(colour = "black"),
+  #          panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
+#           plot.title = element_text(hjust = 0, vjust = 1, face = "bold"),
             plot.margin = unit(c(25,5,15,5),"mm"), strip.background = element_rect()))
 }
 
-
+theme_mine_legend_bottom <-  function (base_size = 12, color = "brown", base_family = "helvetica")
+{
+  colorhex <- ggthemes_data$wsj$bg[color]
+  (theme_foundation(base_size = base_size, base_family = base_family) +
+      theme(#line = element_line(linetype = 1, colour = "black"),
+            rect = element_rect(fill = colorhex, linetype = 0,
+                                colour = NA), text = element_text(colour = "black"),
+            title = element_text(family = base_family, size = 18),
+            axis.title = element_text(face = "bold",size = 12),
+            axis.text = element_text(face = "bold",
+                                     size = rel(1)),
+            axis.text.x = element_text(colour = NULL),
+            axis.title.y = element_text(angle=90,margin = margin(r = 10)),
+            axis.title.x = element_text(margin = margin(t = 7)),
+            axis.text.y = element_text(colour = NULL),
+            axis.ticks = element_line(colour = NULL),
+            axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL),
+            axis.line = element_line(), axis.line.y = element_blank(),
+            legend.background = element_rect(), legend.position = "bottom",
+            legend.direction = "horizontal", legend.box = "horizontal",
+            legend.title = element_text(),
+            legend.text = element_text(size = 12),
+#            legend.text.align = 0,
+#            legend.key.height=unit(-10, "mm"),
+#            legend.justification = c(0,0),
+#          legend.margin = unit(-0.1, "lines") ,
+            legend.key = element_rect(size = 0),
+            legend.key.size = unit(0, 'mm'),
+            panel.grid = element_line(colour = NULL, linetype = 0),
+            panel.grid.major = element_blank(),
+      #      panel.grid.major = element_blank(),
+            panel.grid.major.x = element_line(colour = NULL, linetype = 0),
+            panel.grid.minor = element_blank(),
+            plot.title = element_text(hjust = 0.5, face = "bold"),
+            plot.margin = unit(c(10,10,30,10),"mm"),
+            strip.background = element_rect()))
+}
 g_legend <- function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
@@ -96,30 +133,69 @@ g_legend <- function(a.gplot){
 }
 
 
-theme_mine <-  function (base_size = 12, color = "brown", base_family = "helvetica") 
+theme_mine <-  function (base_size = 12, color = "brown", base_family = "helvetica")
 {
     colorhex <- ggthemes_data$wsj$bg[color]
-    (theme_foundation(base_size = base_size, base_family = base_family) + 
-        theme(line = element_line(linetype = 1, colour = "black"), 
-            rect = element_rect(fill = colorhex, linetype = 0, 
-                colour = NA), text = element_text(colour = "black"), 
-            title = element_text(family = base_family, size = rel(1.5)), 
+    (theme_foundation(base_size = base_size, base_family = base_family) +
+        theme(line = element_line(linetype = 1, colour = "black"),
+            rect = element_rect(fill = colorhex, linetype = 0,
+                colour = NA), text = element_text(colour = "black"),
+            title = element_text(family = base_family, size = rel(1.5)),
             axis.title = element_text(face = "bold",size = rel(.75)),
-            axis.text = element_text(face = "bold", 
-                size = rel(1)), axis.text.x = element_text(colour = NULL),               
+            axis.text = element_text(face = "bold",
+                size = rel(1)), axis.text.x = element_text(colour = NULL),
            axis.title.y = element_text(angle=90,margin = margin(r = 10)),
            axis.title.x = element_text(margin = margin(t = 10)),
-            axis.text.y = element_text(colour = NULL), axis.ticks = element_line(colour = NULL), 
-            axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL), 
-            axis.line = element_line(), axis.line.y = element_blank(), 
-            legend.background = element_rect(), legend.position = "right", 
-#           legend.direction = "horizontal", legend.box = "vertical", 
-            legend.title = element_text(fac = "bold", size = rel(.6)),
+            axis.text.y = element_text(colour = NULL),
+           axis.ticks = element_line(colour = NULL),
+            axis.ticks.y = element_blank(), axis.ticks.x = element_line(colour = NULL),
+            axis.line = element_line(), axis.line.y = element_blank(),
+            legend.background = element_rect(), legend.position = "right",
+           legend.direction = "horizontal", legend.box = "vertical",
+            legend.title = element_text( size = rel(.8)),
             legend.direction = "vertical", legend.box = "vertical",
-            panel.grid = element_line(colour = NULL, linetype = 0), 
-#            panel.grid.major = element_line(colour = "black"), 
+            panel.grid = element_line(colour = NULL, linetype = 0),
+            panel.grid.major = element_line(colour = "black"),
             panel.grid.major = element_blank(),
-            panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(), 
-            plot.title = element_text(hjust = 0.5, face = "bold"), 
+            panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
+            plot.title = element_text(hjust = 0.5, face = "bold"),
             plot.margin = unit(c(10,10,10,10),"mm"), strip.background = element_rect()))
+}
+
+theme_new <- function (base_size = 20, base_family = "helvetica", 
+                       color.background = "#D5E2EA")
+{
+    (theme_foundation(base_size = base_size, base_family = base_family) +
+         theme(
+                # line = element_line(colour = "black"),
+             rect = element_rect(),
+             text = element_text(),
+             axis.title = element_text(size = rel(.85),
+                                       face = "bold", colour = "#000c52"),
+             axis.text = element_text(),
+             axis.ticks = element_blank(), axis.line = element_blank(),
+             panel.background = element_rect(fill = color.background,
+             color = color.background),
+             plot.background = element_rect(fill = color.background, 
+                                                                                                       color = color.background),             legend.background =  element_blank(),
+             legend.title=element_blank(),
+             legend.direction = "horizontal",
+             legend.key = element_blank(),
+            # legend.key.size = unit(5, 'mm'),
+             # legend.justification=c(.5,-.5),
+             # legend.position=c(.5,-.5),
+             legend.position="bottom",
+             plot.title=element_text(size=rel(1), hjust=0.5,
+                                     face = "bold",
+                                     colour = "#000c52"),
+             plot.subtitle=element_text(size=rel(1), hjust=0.5,
+                                        face=c("italic", "bold"),
+                                        colour = "#000c52"),
+             # plot.margin = unit(c(10,5,25,5),"mm"),
+             panel.grid = element_blank(),
+             panel.grid.major = element_blank(),
+             panel.border = element_blank(),
+             panel.grid.minor = element_blank(),
+             plot.margin = unit(c(2, 2, 4, 2), "lines"),
+             strip.background = element_rect()))
 }
