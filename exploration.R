@@ -202,7 +202,9 @@ match_aggregates_1_ipl<- gather(match_aggregates_ipl,
           `Average`, `SR`, `4s`, `6s`, `Boundaries %`,
           `Match_date`, `Match_no`,
           `Team1`, `Team2`, `Winner`,
-          `Match_Result`))
+          `Match_Result`)) %>%
+  mutate(Runs_class = factor(Runs_class, levels = c("Runs from boundaries", 
+                                                    "1s, 2s and 3s")) )
 
 
 
@@ -225,7 +227,7 @@ ggsave("graphs/all_total_ipl_bar.svg",
        all_total_ipl_bar, width = 16, height = 6)
 
 gg_animate(all_total_ipl_bar,"graphs/all_total_ipl_bar.gif", interval = .01 , 
-           ani.width = 1152, ani.height = 576, loop = 1, autoplay = FALSE)
+           ani.width = 1152, ani.height = 576, loop = 1, title_frame = FALSE)
 
 
 all_aggregate_ipl_bar <- ggplot(data= match_aggregates_ipl,
@@ -261,14 +263,25 @@ all_aggregate_ipl_bar <- ggplot(data= match_aggregates_ipl,
 all_aggregate_ipl_bar + theme(axis.line = element_line(size = 0))
 ggplotly(all_aggregate_ipl_bar)
 
-all_aggregate_ipl_bar <- ggplot(data= match_aggregates_ipl,
+all_aggregate_ipl_bar <- ggplot(data= match_aggregates_1_ipl,
                                 aes(x = `Match_no`,
-                                    y = Runs,text = paste(`Match`, ":", `Team1`, "vs", Team2, Winner, Match_Result, sep = " "))) +
-  geom_bar( stat = "identity", color = "coral4") +
-  geom_point(aes(x=`Match_no`, y=`Runs from boundaries`,
-                 fill = "Runs from boundaries"),
-             shape = 45, size =15,
-             colour = "coral4")
+                                    y = Total,
+                                    fill = Runs_class,
+                                    tooltip = paste(`Match`, ":", `Team1`, 
+                                                 "vs", Team2, Winner, 
+                                                 Match_Result, sep = " "))) +
+  geom_bar_interactive( stat = "identity" ) +
+  ggtitle("Total for every innings") + xlab("Match_no") + ylab("Runs") +
+  theme_new()+
+  scale_fill_economist()  
+
+ggiraph(code = print(all_aggregate_ipl_bar), width_svg = 16,
+        height_svg = 6)
+
+match_aggregates_1_ipl %>% group_by(`Match_no`,`Runs_class` ) %>%
+  ggvis(x=~`Match_no`, y=~Total, fill=~`Runs_class`) %>%
+  layer_bars()%>%scale_nominal("fill", range = economist_pal()(2))
+
 
 ggplot(data= match_aggregates_1_ipl,
        aes(x = `Match_no`,
